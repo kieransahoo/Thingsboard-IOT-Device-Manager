@@ -1,6 +1,7 @@
 ## IOT Device Managemnet using Thingsboard API
 
-![alt text](device-details.png) ![alt text](home.png)
+![alt text](home.png)
+![alt text](device-details.png) 
 📌 Overview
 This project demonstrates ThingsBoard, an open-source IoT platform, with:
 ✅ Local Docker Setup

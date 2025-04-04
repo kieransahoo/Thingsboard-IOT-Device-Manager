@@ -1,0 +1,69 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">IoT Devices</h1>
+    <button (click)="refreshPage()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Refresh</button>
+  </div>
+
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    {{ error }}
+    <a *ngIf="error.includes('login')" routerLink="/login" class="ml-2 text-blue-600 hover:underline">Go to Login</a>
+  </div>
+
+  <div *ngIf="!isLoading && !error">
+    <div class="overflow-x-auto shadow-md rounded-lg">
+      <table class="min-w-full bg-white">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr *ngFor="let device of devices" class="hover:bg-gray-50 transition-colors" [routerLink]="['/devices', device.id.id]">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ device.name }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                [ngClass]="{
+                  'bg-green-100 text-green-800': device.type === 'thermometer',
+                  'bg-blue-100 text-blue-800': device.type === 'gateway',
+                  'bg-purple-100 text-purple-800': !['thermometer','gateway'].includes(device.type)
+                }">
+                {{ device.type }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                [ngClass]="{
+                  'bg-green-100 text-green-800': device.active,
+                  'bg-red-100 text-red-800': !device.active
+                }">
+                {{ device.active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              {{ device.createdTime | date:'medium' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="devices.length === 0" class="text-center py-12 bg-gray-50 text-gray-500">
+        No devices found
+      </div>
+    </div>
+
+    <div class="flex justify-center mt-4">
+      <button (click)="previousPage()" [disabled]="currentPage === 0" class="px-4 py-2 mx-1 bg-gray-200 rounded">Previous</button>
+      <span class="px-4 py-2">Page {{ currentPage + 1 }}</span>
+      <button (click)="nextPage()" class="px-4 py-2 mx-1 bg-gray-200 rounded">Next</button>
+    </div>
+  </div>
+</div>

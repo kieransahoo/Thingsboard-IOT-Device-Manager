@@ -1,0 +1,51 @@
+<nav class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <span class="text-xl font-bold text-blue-600">IoT Manager</span>
+        </div>
+  
+        <!-- Navigation Links -->
+        <div class="flex items-center space-x-4">
+          @if (isLoggedIn) {
+            <a
+              routerLink="/devices"
+              class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              routerLinkActive="text-blue-600 border-b-2 border-blue-600">
+              Devices
+            </a>
+            <!-- <a
+              routerLink="/dashboard"
+              class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              routerLinkActive="text-blue-600 border-b-2 border-blue-600">
+              Dashboard
+            </a> -->
+            <a
+              routerLink="/rule-chains"
+              class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              routerLinkActive="text-blue-600 border-b-2 border-blue-600">
+              Rule Chains
+            </a>
+            <button
+              (click)="signOut()"
+              class="px-3 py-2 text-sm font-medium text-red-600 hover:text-red-800 transition-colors">
+              Sign Out
+            </button>
+          } @else {
+            <a
+              routerLink="/login"
+              class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              routerLinkActive="text-blue-600 border-b-2 border-blue-600">
+              Sign In
+            </a>
+            <a
+              routerLink="/signup"
+              class="px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+              Sign Up
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </nav>

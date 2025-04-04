@@ -1,0 +1,33 @@
+.container {
+    max-width: 1200px;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  tr:hover {
+    background-color: #f9fafb;
+  }
+  
+  .badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    table {
+      display: block;
+      overflow-x: auto;
+    }
+  }

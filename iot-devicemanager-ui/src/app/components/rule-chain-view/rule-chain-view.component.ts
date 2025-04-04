@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { RuleNodeModalComponent } from '../rule-node-modal/rule-node-modal.component';
 
 @Component({
   selector: 'app-rule-chain-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe],
   templateUrl: './rule-chain-view.component.html',
   styleUrls: ['./rule-chain-view.component.scss']
 })
@@ -17,12 +19,15 @@ export class RuleChainViewComponent implements OnInit {
   isLoading = true;
   error = '';
   ruleChainId: string = '';
+  selectedNode: any = null;
+  svgConnections: any[] = [];
 
   constructor(
     private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -52,11 +57,12 @@ export class RuleChainViewComponent implements OnInit {
       'Accept': 'application/json'
     });
 
-    const url = `http://localhost:8081/api/iot/rule-chains/${this.ruleChainId}`;
+    const url = `http://localhost:8080/api/ruleChain/${this.ruleChainId}/metadata`;
 
     this.http.get<any>(url, { headers }).subscribe({
       next: (response) => {
         this.ruleChain = response;
+        this.processConnections();
         this.isLoading = false;
       },
       error: (err) => {
@@ -67,18 +73,43 @@ export class RuleChainViewComponent implements OnInit {
     });
   }
 
+  processConnections(): void {
+    if (!this.ruleChain?.connections || !this.ruleChain?.nodes) return;
+    
+    this.svgConnections = this.ruleChain.connections.map((conn: any) => {
+      const fromNode = this.ruleChain.nodes[conn.fromIndex];
+      const toNode = this.ruleChain.nodes[conn.toIndex];
+      
+      return {
+        fromX: fromNode.additionalInfo?.layoutX || 0,
+        fromY: fromNode.additionalInfo?.layoutY || 0,
+        toX: toNode.additionalInfo?.layoutX || 0,
+        toY: toNode.additionalInfo?.layoutY || 0,
+        type: conn.type
+      };
+    });
+  }
+
+  openNodeDetails(node: any): void {
+    this.selectedNode = node;
+    const modalRef = this.modalService.open(RuleNodeModalComponent, { size: 'lg' });
+    modalRef.componentInstance.node = node;
+  }
+
+  getNodeTypeClass(type: string): string {
+    const typeMap: {[key: string]: string} = {
+      'org.thingsboard.rule.engine.debug.TbMsgGeneratorNode': 'bg-purple-100 text-purple-800',
+      'org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode': 'bg-green-100 text-green-800',
+      'default': 'bg-gray-100 text-gray-800'
+    };
+    return typeMap[type] || typeMap['default'];
+  }
+
   navigateToEdit(): void {
     this.router.navigate(['/rule-chains', this.ruleChainId, 'edit']);
   }
 
   goBack(): void {
     this.router.navigate(['/rule-chains']);
-  }
-
-  getBadgeClass(type: string): string {
-    switch (type) {
-      case 'CORE': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
   }
 }

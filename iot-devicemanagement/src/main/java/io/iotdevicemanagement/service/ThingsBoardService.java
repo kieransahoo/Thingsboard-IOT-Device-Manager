@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.alarm.Alarm;
 
 import java.util.*;
@@ -73,6 +72,8 @@ public class ThingsBoardService {
                 page
         );
 
+        log.info("Fetching devices from URL: {}", url);
+
         ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -80,13 +81,16 @@ public class ThingsBoardService {
                 new ParameterizedTypeReference<>() {}
         );
 
+        log.info("Received response with status code: {}", response.getStatusCode());
         Map<String, Object> responseBody = response.getBody();
         if (response.getBody() != null) {
             Object data = response.getBody().get("data");
+            log.info("Fetched {} devices", ((List<?>) data).size());
             if (data instanceof List) {
                 return (List<Object>) data;
             }
         }
+        log.warn("No devices found");
         return Collections.emptyList();
     }
 
